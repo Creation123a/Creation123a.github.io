@@ -1083,7 +1083,7 @@ static string sessionOf(const httplib::Request& req) {
     return sid;
 }
 
-static void json(httplib::Response& res, const string& body, int status = 200) {
+static void sendJson(httplib::Response& res, const string& body, int status = 200) {
     res.status = status;
     res.set_content(body, "application/json");
 }
@@ -1141,7 +1141,7 @@ if (const char* envPort = std::getenv("PORT")) {
         string j = "{\"status\":\"ok\",\"time\":" + to_string((long)time(nullptr)) +
                    ",\"menu_size\":" + to_string(menu.all().size()) +
                    ",\"orders\":" + to_string(repo.size()) + "}";
-        json(res, j);
+       sendJson(res, j);
     });
 
     // -------- Menu --------
@@ -1157,7 +1157,7 @@ if (const char* envPort = std::getenv("PORT")) {
             if (i + 1 < items.size()) j += ",";
         }
         j += "]";
-        json(res, j);
+       sendJson(res, j);
     });
 
     // -------- Promos --------
@@ -1172,7 +1172,7 @@ if (const char* envPort = std::getenv("PORT")) {
             if (i + 1 < PROMOS.size()) j += ",";
         }
         j += "]";
-        json(res, j);
+        sendJson(res, j);
     });
 
     // -------- Cart (GET) --------
@@ -1180,7 +1180,7 @@ if (const char* envPort = std::getenv("PORT")) {
         string sid = sessionOf(req);
         Cart& c = SessionStore::instance().get(sid);
         lock_guard<mutex> lk(*new mutex()); // placeholder; Cart is only touched per-session
-        json(res, json::cart(c));
+        sendJson(res, json::cart(c));
     });
 
     // -------- Cart: add --------
@@ -1199,7 +1199,7 @@ if (const char* envPort = std::getenv("PORT")) {
 
         Cart& c = SessionStore::instance().get(sid);
         c.add(p->getId(), p->getName(), p->getPrice(), qty, notes, p->getEmoji());
-        json(res, json::cart(c));
+        sendJson(res, json::cart(c));
     });
 
     // -------- Cart: update qty --------
@@ -1210,7 +1210,7 @@ if (const char* envPort = std::getenv("PORT")) {
         int qty = extractInt(f, "qty", 1);
         Cart& c = SessionStore::instance().get(sid);
         c.update(id, qty);
-        json(res, json::cart(c));
+       sendJson(res, json::cart(c));
     });
 
     // -------- Cart: remove --------
@@ -1220,7 +1220,7 @@ if (const char* envPort = std::getenv("PORT")) {
         int id = extractInt(f, "id", -1);
         Cart& c = SessionStore::instance().get(sid);
         c.remove(id);
-        json(res, json::cart(c));
+        sendJson(res, json::cart(c));
     });
 
     // -------- Cart: clear --------
@@ -1228,7 +1228,7 @@ if (const char* envPort = std::getenv("PORT")) {
         string sid = sessionOf(req);
         Cart& c = SessionStore::instance().get(sid);
         c.clear();
-        json(res, json::cart(c));
+        sendJson(res, json::cart(c));
     });
 
     // -------- Checkout --------
@@ -1307,7 +1307,7 @@ if (const char* envPort = std::getenv("PORT")) {
         j += "\"eta\":50,";
         j += "\"message\":\"Order confirmed. We'll start brewing shortly.\"";
         j += "}";
-        json(res, j);
+       sendJson(res, j);
     });
 
     // -------- Track order --------
@@ -1315,7 +1315,7 @@ if (const char* envPort = std::getenv("PORT")) {
         string id = req.matches[1];
         Order o;
         if (!repo.get(id, o)) return errJson(res, 404, "Order not found.");
-        json(res, json::orderStatus(o));
+       	sendJson(res, json::orderStatus(o));
     });
 
     // -------- Recent orders (demo) --------
@@ -1327,7 +1327,7 @@ if (const char* envPort = std::getenv("PORT")) {
             if (i + 1 < list.size()) j += ",";
         }
         j += "]";
-        json(res, j);
+       sendJson(res, j);
     });
 
     // -------- Cancel order --------
@@ -1336,7 +1336,7 @@ if (const char* envPort = std::getenv("PORT")) {
         if (!repo.cancel(id)) return errJson(res, 400, "Too late to cancel.");
         Order o;
         repo.get(id, o);
-        json(res, json::orderStatus(o));
+       	sendJson(res, json::orderStatus(o));
     });
 
     // -------- AI chat --------
