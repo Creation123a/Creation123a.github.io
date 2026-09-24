@@ -277,8 +277,8 @@ public:
         return nullptr;
     }
 
-vector<shared_ptr<Product>> search(const string& q, const string& cat,
-                                   const string& sortBy) const {
+    vector<shared_ptr<Product>> search(const string& q, const string& cat,
+                                       const string& sortBy) const {
         string ql = util::toLower(util::trim(q));
         string cl = util::toLower(util::trim(cat));
         vector<shared_ptr<Product>> out;
@@ -296,22 +296,21 @@ vector<shared_ptr<Product>> search(const string& q, const string& cat,
             out.push_back(p);
         }
 
-        if (sort == "price_asc") {
-            sort(out.begin(), out.end(), [](auto& a, auto& b) {
+        if (sortBy == "price_asc") {
+            std::sort(out.begin(), out.end(), [](auto& a, auto& b) {
                 return a->getPrice() < b->getPrice(); });
-        } else if (sort == "price_desc") {
-            sort(out.begin(), out.end(), [](auto& a, auto& b) {
+        } else if (sortBy == "price_desc") {
+            std::sort(out.begin(), out.end(), [](auto& a, auto& b) {
                 return a->getPrice() > b->getPrice(); });
-        } else if (sort == "rating") {
-            sort(out.begin(), out.end(), [](auto& a, auto& b) {
+        } else if (sortBy == "rating") {
+            std::sort(out.begin(), out.end(), [](auto& a, auto& b) {
                 return a->getRating() > b->getRating(); });
-        } else if (sort == "name") {
-            sort(out.begin(), out.end(), [](auto& a, auto& b) {
+        } else if (sortBy == "name") {
+            std::sort(out.begin(), out.end(), [](auto& a, auto& b) {
                 return a->getName() < b->getName(); });
         }
         return out;
     }
-
 private:
     void seed() {
         // ---------------- ESPRESSO BAR ----------------
