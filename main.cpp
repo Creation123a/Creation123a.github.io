@@ -277,8 +277,8 @@ public:
         return nullptr;
     }
 
-    vector<shared_ptr<Product>> search(const string& q, const string& cat,
-                                       const string& sort) const {
+vector<shared_ptr<Product>> search(const string& q, const string& cat,
+                                   const string& sortBy) const {
         string ql = util::toLower(util::trim(q));
         string cl = util::toLower(util::trim(cat));
         vector<shared_ptr<Product>> out;
