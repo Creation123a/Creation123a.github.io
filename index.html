@@ -1,33 +1,584 @@
-<div style="font-family: Arial, sans-serif; padding: 40px; text-align: center;">
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="color-scheme" content="dark light" />
+<meta name="theme-color" content="#07070b" />
+<title>Aura Coffee Co. — Easy Coffee Booking</title>
 
-  <h2>Redirecting you in <span id="countdown">4</span> seconds...</h2>
+<!--
+  ================================================================
+  AURORA COFFEE CO. — FRONTEND
+  ================================================================
+  Backend (main.cpp) endpoints consumed by app.js:
+    GET  /api/health
+    GET  /api/menu?q=&cat=&sort=
+    GET  /api/promos
+    GET  /api/cart
+    POST /api/cart/add       id, qty, notes
+    POST /api/cart/update    id, qty
+    POST /api/cart/remove    id
+    POST /api/cart/clear
+    POST /api/checkout       name, phone, email, address, payment, promo
+    GET  /api/order/{id}
+    POST /api/order/{id}/cancel
+    GET  /api/orders
+    POST /api/chat           (raw text body)
+  Session header: X-Session
+  ================================================================
+-->
 
-  <p>If you are not redirected automatically, <a href="https://www.effectivegatecpm.com/whgsa51hxz?key=c624b35042e346e6d9f192dcec4a5855" id="redirect-link" target="_top">click here</a>.</p>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
 
-  <meta content="4;url=https://www.effectivegatecpm.com/whgsa51hxz?key=c624b35042e346e6d9f192dcec4a5855" http-equiv="refresh"></meta>
+<body>
 
-  <script>
-
-    var affiliateURL = "https://www.effectivegatecpm.com/whgsa51hxz?key=c624b35042e346e6d9f192dcec4a5855";
-
-    var seconds = 4;
-
-    var timer = setInterval(function() {
-
-      seconds--;
-
-      if(seconds >= 0) document.getElementById("countdown").textContent = seconds;
-
-      if (seconds <= 0) {
-
-        clearInterval(timer);
-
-
-        window.top.location.href = affiliateURL;
-
-      }
-
-    }, 1000);
-
-  </script>
+<!-- =====================================================================
+     PRELOADER — light beam travelling through space
+     ===================================================================== -->
+<div id="preloader" aria-hidden="true">
+  <div class="stars stars-a"></div>
+  <div class="stars stars-b"></div>
+  <div class="stars stars-c"></div>
+  <div class="beam-wrap">
+    <div class="beam"></div>
+    <div class="beam-core"></div>
+  </div>
+  <div class="pre-word" id="preWord">AURORA</div>
 </div>
+
+
+<!-- =====================================================================
+     TOP NAV
+     ===================================================================== -->
+<header class="nav" id="nav">
+  <div class="nav-inner">
+
+    <a class="brand" href="#" data-view="menu" aria-label="Aurora home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22">
+          <path d="M4 8h12v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8z" fill="none"
+                stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M16 9h2.5a2.5 2.5 0 0 1 0 5H16" fill="none"
+                stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M7 4.5c0 1 1 1.5 1 2.5M10.5 4c0 1 1 1.5 1 2.5"
+                stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="brand-text">
+        <span class="brand-name">AURORA</span>
+        <span class="brand-sub">coffee co.</span>
+      </span>
+    </a>
+
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#" data-view="menu"    class="nav-link is-active">Menu</a>
+      <a href="#" data-view="cart"    class="nav-link">Cart</a>
+      <a href="#" data-view="track"   class="nav-link">Track</a>
+      <a href="#" data-view="orders"  class="nav-link">Orders</a>
+    </nav>
+
+    <div class="nav-actions">
+
+      <div class="search-inline" role="search">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M16 16l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <input id="searchInline" type="search" placeholder="Search beans, drinks, pastries…"
+               autocomplete="off" aria-label="Search menu" />
+      </div>
+
+      <button id="themeToggle" class="icon-btn" aria-label="Toggle theme" title="Toggle theme">
+        <svg class="ico-moon" viewBox="0 0 24 24" width="18" height="18">
+          <path d="M20 14.5A8 8 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"
+                fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+        <svg class="ico-sun" viewBox="0 0 24 24" width="18" height="18">
+          <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"
+                stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <!-- Cart pill -->
+      <button class="cart-pill" data-view="cart" aria-label="Open cart">
+        <svg viewBox="0 0 24 24" width="18" height="18">
+          <path d="M4 6h2l2 11h10l2-8H7" fill="none" stroke="currentColor"
+                stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="9" cy="20" r="1.4" fill="currentColor"/>
+          <circle cx="17" cy="20" r="1.4" fill="currentColor"/>
+        </svg>
+        <span id="cartCount" class="cart-count">0</span>
+      </button>
+
+      <!-- Cartoon AI barista avatar -->
+      <button id="botToggle" class="bot-avatar" aria-label="Open Aria, your coffee assistant"
+              title="Aria · your coffee assistant">
+        <svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true">
+          <!-- cap -->
+          <path d="M8 22 Q24 8 40 22 L40 15 Q24 3 8 15 Z" fill="#2b1d13"/>
+          <rect x="7" y="19" width="34" height="4" rx="2" fill="#1c130c"/>
+          <!-- face -->
+          <circle cx="24" cy="27" r="13" fill="#e8b483"/>
+          <!-- eyes -->
+          <circle cx="19" cy="27" r="1.9" fill="#160f0a"/>
+          <circle cx="29" cy="27" r="1.9" fill="#160f0a"/>
+          <circle cx="19.6" cy="26.4" r="0.6" fill="#fff"/>
+          <circle cx="29.6" cy="26.4" r="0.6" fill="#fff"/>
+          <!-- blush -->
+          <ellipse cx="15" cy="31" rx="2.4" ry="1.4" fill="#ff8f6b" opacity=".55"/>
+          <ellipse cx="33" cy="31" rx="2.4" ry="1.4" fill="#ff8f6b" opacity=".55"/>
+          <!-- smile -->
+          <path d="M19 33 q5 4 10 0" stroke="#160f0a" stroke-width="1.8"
+                fill="none" stroke-linecap="round"/>
+          <!-- collar -->
+          <path d="M12 40 q12 6 24 0" stroke="#2b1d13" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <circle class="bot-pulse" cx="24" cy="41" r="2" fill="#ffb066"/>
+        </svg>
+        <span class="bot-dot" aria-hidden="true"></span>
+      </button>
+
+    </div>
+  </div>
+</header>
+
+
+<!-- =====================================================================
+     MAIN
+     ===================================================================== -->
+<main id="main" class="main">
+
+
+  <!-- ============ VIEW: MENU ============ -->
+  <section id="view-menu" class="view is-active" aria-labelledby="menuTitle">
+
+    <div class="hero">
+      <div class="hero-left">
+        <div class="eyebrow">
+          <span class="dot"></span> Live · open now · delivers in ~50s
+        </div>
+        <h1 id="menuTitle" class="hero-title">
+          Brewed at the <em>speed of light</em>.
+        </h1>
+        <p class="hero-sub">
+          Single-origin pour-overs, cold brew, pastries and merch —
+          ordered from a C++ backend and delivered to your desk.
+        </p>
+
+        <div class="hero-stats">
+          <div class="stat"><b id="statMenu">—</b><span>items</span></div>
+          <div class="stat"><b>4.8</b><span>avg rating</span></div>
+          <div class="stat"><b>~50s</b><span>delivery</span></div>
+        </div>
+      </div>
+
+      <div class="hero-right" aria-hidden="true">
+        <div class="orb"></div>
+        <div class="orb-ring"></div>
+        <div class="orb-glow"></div>
+      </div>
+    </div>
+
+    <!-- Promo strip (populated from /api/promos) -->
+    <div class="promo-strip" id="promoStrip" aria-label="Active promotions"></div>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="tabs" id="catTabs" role="tablist" aria-label="Menu category">
+        <button class="tab is-active" data-cat=""       role="tab">All</button>
+        <button class="tab"           data-cat="coffee" role="tab">Coffee</button>
+        <button class="tab"           data-cat="tea"    role="tab">Tea</button>
+        <button class="tab"           data-cat="pastry" role="tab">Pastry</button>
+        <button class="tab"           data-cat="merch"  role="tab">Merch</button>
+      </div>
+
+      <div class="sort-wrap">
+        <label for="sortSelect" class="sr-only">Sort</label>
+        <select id="sortSelect" class="select">
+          <option value="">Featured</option>
+          <option value="price_asc">Price · low → high</option>
+          <option value="price_desc">Price · high → low</option>
+          <option value="rating">Top rated</option>
+          <option value="name">Name · A → Z</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Mobile search -->
+    <div class="search-mobile">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+        <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M16 16l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <input id="searchMobile" type="search" placeholder="Search the menu…" autocomplete="off"/>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid" id="grid" aria-live="polite" aria-busy="false"></div>
+
+    <div class="grid-empty" id="gridEmpty" hidden>
+      <div class="empty-glyph">◌</div>
+      <h3>Nothing matches that</h3>
+      <p>Try “ethiopian”, “cold”, “croissant”, or clear the search.</p>
+      <button class="btn ghost" id="clearFilters">Clear filters</button>
+    </div>
+  </section>
+
+
+  <!-- ============ VIEW: CART ============ -->
+  <section id="view-cart" class="view" aria-labelledby="cartTitle">
+    <div class="view-head">
+      <div>
+        <div class="eyebrow"><span class="dot"></span> Step 1 of 3</div>
+        <h2 id="cartTitle" class="view-title">Your cart</h2>
+      </div>
+      <button class="btn ghost" id="clearCart" type="button">Clear all</button>
+    </div>
+
+    <div class="cart-layout">
+      <div class="cart-list-wrap">
+        <div id="cartList" class="cart-list" aria-live="polite"></div>
+
+        <div class="empty-cart" id="emptyCart" hidden>
+          <div class="empty-glyph">∅</div>
+          <h3>Your cart is empty</h3>
+          <p>Add something from the menu — a nitro cold brew never disappoints.</p>
+          <button class="btn primary" data-view="menu" type="button">Browse menu</button>
+        </div>
+      </div>
+
+      <aside class="summary" aria-label="Order summary">
+        <h3 class="summary-title">Summary</h3>
+        <div id="cartTotals" class="totals"></div>
+        <button class="btn primary block" id="toCheckout" type="button" disabled>
+          Proceed to checkout
+        </button>
+        <button class="btn ghost block" data-view="menu" type="button">
+          ← Add more items
+        </button>
+      </aside>
+    </div>
+  </section>
+
+
+  <!-- ============ VIEW: CHECKOUT ============ -->
+  <section id="view-checkout" class="view" aria-labelledby="coTitle">
+    <div class="view-head">
+      <div>
+        <div class="eyebrow"><span class="dot"></span> Step 2 of 3</div>
+        <h2 id="coTitle" class="view-title">Checkout</h2>
+      </div>
+      <button class="btn ghost" id="backToCart" type="button">← Back to cart</button>
+    </div>
+
+    <div class="checkout-layout">
+
+      <form class="co-form" id="coForm" novalidate>
+        <fieldset class="fieldset">
+          <legend>Contact</legend>
+
+          <div class="field">
+            <label for="coName">Full name <span class="req">*</span></label>
+            <input id="coName" name="name" type="text" placeholder="Ada Lovelace"
+                   autocomplete="name" required />
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="coPhone">Phone <span class="req">*</span></label>
+              <input id="coPhone" name="phone" type="tel" placeholder="+91 98765 43210"
+                     autocomplete="tel" required />
+            </div>
+            <div class="field">
+              <label for="coEmail">Email <span class="opt">(optional)</span></label>
+              <input id="coEmail" name="email" type="email" placeholder="you@aurora.dev"
+                     autocomplete="email" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="coAddress">Delivery address <span class="req">*</span></label>
+            <textarea id="coAddress" name="address" rows="3"
+                      placeholder="Flat / Street / Landmark / City / PIN"
+                      autocomplete="street-address" required></textarea>
+            <div class="hint" id="addrHint">Use the notes field for gate codes or drop-off preferences.</div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>Payment method</legend>
+          <div class="pay-grid">
+            <label class="pay-option">
+              <input type="radio" name="payment" value="online" checked />
+              <span class="pay-card">
+                <span class="pay-ico">
+                  <svg viewBox="0 0 24 24" width="18" height="18">
+                    <rect x="2.5" y="5.5" width="19" height="13" rx="2.5"
+                          fill="none" stroke="currentColor" stroke-width="1.6"/>
+                    <path d="M2.5 10h19" stroke="currentColor" stroke-width="1.6"/>
+                    <circle cx="6.5" cy="14.5" r="1.1" fill="currentColor"/>
+                  </svg>
+                </span>
+                <span class="pay-text">
+                  <b>Online payment</b>
+                  <small>Card / UPI · simulated</small>
+                </span>
+              </span>
+            </label>
+
+            <label class="pay-option">
+              <input type="radio" name="payment" value="cod" />
+              <span class="pay-card">
+                <span class="pay-ico">
+                  <svg viewBox="0 0 24 24" width="18" height="18">
+                    <rect x="2.5" y="6.5" width="16" height="11" rx="2"
+                          fill="none" stroke="currentColor" stroke-width="1.6"/>
+                    <circle cx="18.5" cy="12" r="3.5" fill="none"
+                            stroke="currentColor" stroke-width="1.6"/>
+                    <path d="M18.5 10.6v2.8M17.1 12h2.8"
+                          stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </span>
+                <span class="pay-text">
+                  <b>Cash on delivery</b>
+                  <small>Pay the rider</small>
+                </span>
+              </span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset class="fieldset">
+          <legend>Promo code</legend>
+          <div class="promo-row">
+            <input id="coPromo" name="promo" type="text" placeholder="BREW20 or FIRSTCUP"
+                   autocomplete="off" />
+            <button class="btn ghost" id="applyPromo" type="button">Apply</button>
+          </div>
+          <div class="promo-chips" id="promoChips"></div>
+          <div class="hint" id="promoHint"></div>
+        </fieldset>
+      </form>
+
+      <aside class="summary checkout-summary" aria-label="Order summary">
+        <h3 class="summary-title">Order summary</h3>
+        <div id="coSummary" class="totals"></div>
+        <button class="btn primary block" id="placeOrder" type="button">
+          Place order
+        </button>
+        <p class="fineprint">
+          Demo only. No real payment is processed.
+        </p>
+      </aside>
+    </div>
+  </section>
+
+
+  <!-- ============ VIEW: TRACK ============ -->
+  <section id="view-track" class="view" aria-labelledby="trTitle">
+    <div class="view-head">
+      <div>
+        <div class="eyebrow"><span class="dot"></span> Step 3 of 3</div>
+        <h2 id="trTitle" class="view-title">Track your order</h2>
+      </div>
+      <button class="btn ghost" data-view="orders" type="button">Recent orders →</button>
+    </div>
+
+    <div class="track-search">
+      <input id="trackId" type="text" placeholder="CFE-10001" autocomplete="off"
+             spellcheck="false" />
+      <button class="btn primary" id="trackBtn" type="button">Track</button>
+    </div>
+
+    <div id="trackResult" class="track-result" aria-live="polite"></div>
+
+    <div class="track-idle" id="trackIdle">
+      <div class="empty-glyph">◐</div>
+      <h3>Enter an order ID</h3>
+      <p>Order IDs look like <code>CFE-10001</code>. You'll see a live stepper and ETA here.</p>
+    </div>
+  </section>
+
+
+  <!-- ============ VIEW: ORDERS ============ -->
+  <section id="view-orders" class="view" aria-labelledby="orTitle">
+    <div class="view-head">
+      <div>
+        <div class="eyebrow"><span class="dot"></span> History</div>
+        <h2 id="orTitle" class="view-title">Recent orders</h2>
+      </div>
+      <button class="btn ghost" id="refreshOrders" type="button">Refresh</button>
+    </div>
+
+    <div class="orders-list" id="ordersList" aria-live="polite"></div>
+
+    <div class="empty-cart" id="emptyOrders" hidden>
+      <div class="empty-glyph">∅</div>
+      <h3>No orders yet</h3>
+      <p>Place your first order and it'll show up here.</p>
+      <button class="btn primary" data-view="menu" type="button">Start an order</button>
+    </div>
+  </section>
+
+</main>
+
+
+<!-- =====================================================================
+     FOOTER
+     ===================================================================== -->
+<footer class="foot">
+  <div class="foot-inner">
+    <span>© <span id="year">2026</span> Aurora Coffee Co.</span>
+    <span class="foot-mid">C++ backend · HTML/CSS/JS frontend</span>
+    <span class="foot-right">
+      <span class="live-dot"></span> server <span id="healthLabel">—</span>
+    </span>
+  </div>
+</footer>
+
+
+<!-- =====================================================================
+     BOT PANEL
+     ===================================================================== -->
+<aside id="botPanel" class="bot-panel" aria-hidden="true" aria-label="Aria, coffee assistant">
+  <header class="bot-head">
+    <div class="bot-id">
+      <span class="bot-avatar-static" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="30" height="30">
+          <path d="M8 22 Q24 8 40 22 L40 15 Q24 3 8 15 Z" fill="#2b1d13"/>
+          <rect x="7" y="19" width="34" height="4" rx="2" fill="#1c130c"/>
+          <circle cx="24" cy="27" r="13" fill="#e8b483"/>
+          <circle cx="19" cy="27" r="1.9" fill="#160f0a"/>
+          <circle cx="29" cy="27" r="1.9" fill="#160f0a"/>
+          <ellipse cx="15" cy="31" rx="2.4" ry="1.4" fill="#ff8f6b" opacity=".55"/>
+          <ellipse cx="33" cy="31" rx="2.4" ry="1.4" fill="#ff8f6b" opacity=".55"/>
+          <path d="M19 33 q5 4 10 0" stroke="#160f0a" stroke-width="1.8"
+                fill="none" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <div>
+        <b>Aria</b>
+        <small><span class="live-dot"></span> online</small>
+      </div>
+    </div>
+    <button class="icon-btn" id="botClose" aria-label="Close assistant">✕</button>
+  </header>
+
+  <div class="bot-log" id="botLog" role="log" aria-live="polite"></div>
+
+  <div class="bot-chips" id="botChips">
+    <button class="chip" data-msg="Recommend something">Recommend something</button>
+    <button class="chip" data-msg="Delivery time?">Delivery time?</button>
+    <button class="chip" data-msg="Any promo codes?">Promo codes?</button>
+    <button class="chip" data-msg="Vegan options?">Vegan options?</button>
+  </div>
+
+  <form class="bot-input" id="botForm">
+    <input id="botMsg" type="text" placeholder="Ask about the menu, delivery, promos…"
+           autocomplete="off" />
+    <button type="submit" aria-label="Send">
+      <svg viewBox="0 0 24 24" width="18" height="18">
+        <path d="M3 11.5 21 3l-8.5 18-2.5-7z" fill="none" stroke="currentColor"
+              stroke-width="1.6" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </form>
+</aside>
+
+
+<!-- =====================================================================
+     ITEM MODAL — customise before adding
+     ===================================================================== -->
+<div id="itemModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="modal-backdrop" data-close-modal></div>
+
+  <div class="modal-card" role="document">
+    <button class="icon-btn modal-close" data-close-modal aria-label="Close">✕</button>
+
+    <div class="modal-head">
+      <div class="modal-emoji" id="imEmoji">☕</div>
+      <div>
+        <h3 id="imName">Item</h3>
+        <p id="imDesc" class="muted"></p>
+      </div>
+    </div>
+
+    <div class="modal-price">
+      <span id="imPrice">₹0</span>
+      <small id="imUnit">per item</small>
+    </div>
+
+    <div class="modal-group" data-group="size">
+      <h4>Size</h4>
+      <div class="chip-row">
+        <button class="chip is-active" data-val="">Regular</button>
+        <button class="chip" data-val="Large">Large <em>+₹40</em></button>
+        <button class="chip" data-val="Small">Small</button>
+      </div>
+    </div>
+
+    <div class="modal-group" data-group="milk">
+      <h4>Milk</h4>
+      <div class="chip-row">
+        <button class="chip is-active" data-val="">Whole</button>
+        <button class="chip" data-val="Oat milk">Oat</button>
+        <button class="chip" data-val="Almond milk">Almond</button>
+        <button class="chip" data-val="Skim milk">Skim</button>
+      </div>
+    </div>
+
+    <div class="modal-group" data-group="sugar">
+      <h4>Sugar</h4>
+      <div class="chip-row">
+        <button class="chip is-active" data-val="">Normal</button>
+        <button class="chip" data-val="Less sugar">Less</button>
+        <button class="chip" data-val="No sugar">None</button>
+        <button class="chip" data-val="Extra sugar">Extra</button>
+      </div>
+    </div>
+
+    <div class="modal-group" data-group="extras">
+      <h4>Extras</h4>
+      <div class="chip-row">
+        <button class="chip" data-val="Extra shot">Extra shot</button>
+        <button class="chip" data-val="Vanilla syrup">Vanilla</button>
+        <button class="chip" data-val="Caramel drizzle">Caramel</button>
+        <button class="chip" data-val="Cinnamon">Cinnamon</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="imNotes">Notes for the barista</label>
+      <input id="imNotes" type="text" maxlength="160"
+             placeholder="e.g. extra hot, no foam, gate code 4B" />
+    </div>
+
+    <div class="modal-foot">
+      <div class="qty" role="group" aria-label="Quantity">
+        <button type="button" id="imQtyMinus" aria-label="Decrease quantity">−</button>
+        <input id="imQty" type="text" value="1" inputmode="numeric" aria-label="Quantity" />
+        <button type="button" id="imQtyPlus" aria-label="Increase quantity">+</button>
+      </div>
+
+      <button class="btn primary grow" id="imAdd" type="button">
+        Add to cart · <span id="imTotal">₹0</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     TOASTS
+     ===================================================================== -->
+<div id="toastWrap" class="toast-wrap" aria-live="polite" aria-atomic="true"></div>
+
+
+<script src="app.js"></script>
+</body>
+</html>
