@@ -1116,6 +1116,9 @@ static string extractS(const map<string,string>& f, const string& k,
 // ============================================================================
 int main(int argc, char** argv) {
     int port = 8080;
+if (const char* envPort = std::getenv("PORT")) {
+    port = std::atoi(envPort);
+}
     if (argc > 1) { try { port = stoi(argv[1]); } catch (...) {} }
 
     MenuRepository&  menu = *new MenuRepository();     // intentional leak: lifetime == process
