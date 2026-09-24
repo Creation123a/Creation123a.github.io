@@ -368,7 +368,7 @@ private:
             vector<string>{"single-origin"}, "🇬🇹", 4.6, "Guatemala", "Medium"));
         add(make_shared<Coffee>(17, "Ethiopian Decaf", 300, "brewed",
             "Swiss-water decaf. All the flavour, none of the buzz.",
-            vector<string>{"decaf", "single-origin"}, "🌙", 4.3,
+            vector<string>{"decaf", "single-origin"}, "🌙", 4.4,
             "Ethiopia", "Light", true));
 
         // ---------------- COLD BAR ----------------
